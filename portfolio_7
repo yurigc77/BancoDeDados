@@ -1,0 +1,42 @@
+create role labbd02 with password '123' noinherit createdb createrole
+
+select current_user
+
+3-
+grant insert on empregado to labbd02 WITH GRANT OPTION GRANTED BY postgres
+grant select on empregado to labbd02 WITH GRANT OPTION GRANTED BY postgres
+
+4-
+create role labbd03 with password '123' noinherit 
+
+5-
+grant select on empregado to labbd03
+
+6-
+grant select on empregado to labbd01 WITH GRANT OPTION
+
+7-
+grant select on empregado to labbd03
+
+8-
+revoke select on empregado from labbd02 restrict
+select * from empregado
+
+9-
+revoke select on empregado from labbd02 cascade
+select * from empregado
+
+11-
+revoke select on empregado from labbd03
+select * from empregado
+a)
+select * from information_schema.table_privileges
+
+12-
+	12.8-
+	revoke select on empregado from labbd02 restrict
+	select * from empregado
+
+	12.9-
+	revoke select on empregado from labbd02 cascade
+	select * from empregado

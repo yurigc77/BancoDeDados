@@ -1,0 +1,47 @@
+CREATE INDEX index_nome_e_depto
+ON empregado (nome_empregado,depto);
+
+SET enable_indexscan to on;
+SET enable_bitmapscan to On;
+
+
+
+1-i
+explain analyze
+select * from empregado
+where nome_empregado='Michael' OR depto = 10
+
+1-ii
+explain analyze
+select * from empregado
+where nome_empregado = 'Michael'
+union
+select * from empregado
+where depto = 10
+
+1-iii
+explain analyze
+select * from empregado
+where nome_empregado='Michael' AND depto = 10
+
+
+2-a
+explain analyze
+select * from empregado
+where nome_empregado = 'Michael'
+
+2-b
+explain analyze
+select * from empregado
+where nome_empregado iLIKE 'Michael'
+
+2-c
+explain analyze
+select * from empregado
+where nome_empregado LIKE 'Michael%'
+
+2-d
+explain analyze
+select * from empregado
+where nome_empregado LIKE '%Michael'
+

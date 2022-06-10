@@ -1,0 +1,81 @@
+create INDEX index_nome
+ON empregado (nome_empregado);
+
+create INDEX index_nome_e_dept
+ON empregado (nome_empregado,depto);
+
+create INDEX index_dept
+ON empregado (depto);
+
+create INDEX index_salario
+ON empregado (salario);
+
+SET enable_indexscan to on;
+SET enable_bitmapscan to on;
+
+2-
+explain analyze
+select * from empregado
+where nome_empregado='Mary' and depto = 10
+
+6- 
+explain analyze
+select * from empregado
+where nome_empregado = 'Mary'
+union
+select * from empregado
+where depto = 10
+
+7-
+explain analyze
+select * from empregado
+where nome_empregado LIKE 'M%'
+order by nome_empregado
+
+8-
+explain analyze
+select * from empregado
+where nome_empregado iLIKE '%an%' 
+order by nome_empregado
+
+12-
+explain analyze
+select nome_empregado 
+from empregado inner join departamento
+on empregado.depto = departamento.cod
+where empregado.depto = 5
+
+16-
+explain analyze
+select nome_empregado 
+from empregado inner join departamento
+on empregado.depto = departamento.cod
+where empregado.depto = 5 and empregado.tipo_empregado = 10
+
+
+17-
+explain analyze
+select nome_empregado
+from empregado
+where salario > 1000
+
+explain analyze
+select nome_empregado
+from empregado
+where depto > 10 and depto < 30
+
+18-
+explain analyze
+--SELECT MAX(salario) FROM empregado
+SELECT MIN(salario) FROM empregado
+
+
+
+
+select * from tipo_empregado
+select * from empregado
+select * from departamento
+
+
+
+

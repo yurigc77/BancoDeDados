@@ -1,0 +1,59 @@
+1-
+select avg(salario) as media, departamento.nome_depto 
+from empregado inner join departamento on empregado.depto = departamento.cod
+group by cod order by avg(salario) desc limit 1
+
+2-
+*****Criando a tabela projeto
+
+CREATE TABLE projeto (
+    cod_projeto INTEGER NOT NULL,
+    nome_projeto VARCHAR(50) NOT NULL,
+    gerente VARCHAR NOT NULL,
+    data_inicio DATE NOT NULL,
+    data_fim DATE NOT NULL,
+    PRIMARY KEY (cod_projeto),
+  	CONSTRAINT fk_projeto_empregado FOREIGN KEY (gerente) REFERENCES empregado (cpf)
+);
+********criando tabela intermediaria
+CREATE TABLE projeto_empregado (
+    cod_projeto INTEGER NOT NULL,
+     cpf_empregado VARCHAR(50) NOT NULL,
+    PRIMARY KEY (cod_projeto,cpf_empregado),
+  	CONSTRAINT fk_cod_projeto FOREIGN KEY (cod_projeto) REFERENCES  projeto(cod_projeto),
+	CONSTRAINT fk_cpf_empregado FOREIGN KEY (cpf_empregado) REFERENCES  empregado(cpf)
+);
+
+2-a)
+select projeto.gerente,projeto_empregado.cpf_empregado 
+from projeto inner join projeto_empregado on projeto.cod_projeto = projeto_empregado.cod_projeto
+where projeto.data_inicio < '2020-01-01'
+
+b)
+select cpf_empregado from projeto_empregado
+group by cpf_empregado 
+having count(cpf_empregado) = (select count(distinct cod_projeto) from projeto_empregado);
+
+c)
+CREATE OR REPLACE FUNCTION generic (tableName text, columnName text, cod text) RETURNS SETOF record AS $$
+    BEGIN
+        EXECUTE format('SELECT %s FROM %s WHERE cod = %s',columnName, tableName, cod);
+    END
+$$ LANGUAGE 'plpgsql';
+
+SELECT generic('departamento', 'nome_depto', '1');
+
+d)
+CREATE TEMPORARY TABLE projett as
+select *
+from projeto 
+where projeto.data_inicio > '2021-01-01'
+
+alter table projett add foreign KEY (cod_projeto) references empregado(cpf)
+
+select * from projett
+
+e)
+select count(projett.cod_projeto) from projett
+
+

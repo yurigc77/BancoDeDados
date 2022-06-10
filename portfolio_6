@@ -1,0 +1,55 @@
+1- Execute:
+a. CREATE TABLE testeSQLi (id serial, data text);
+b. INSERT INTO testeSQLi (data) VALUES ('Important data');
+
+
+2- Crie a função:
+CREATE or replace FUNCTION unsafe_add_table(text)
+RETURNS void AS $func$
+BEGIN
+EXECUTE 'CREATE TABLE ' || $1 || '(item_1 int, item_2 int)';
+END
+$func$ LANGUAGE plpgsql;
+
+
+3- Use a função:
+SELECT unsafe_add_table('T1(id int); DELETE FROM testeSQLi; --'); -- malicious call with SQL injection
+
+4-
+select * from testeSQLi
+
+
+6- Substitua a função por:
+CREATE or replace FUNCTION unsafe_add_table(text)
+RETURNS void AS
+$func$
+BEGIN
+EXECUTE 'CREATE TABLE ' || quote_ident($1) || '(item_1 int, item_2 int)';
+END
+$func$ LANGUAGE plpgsql;
+
+6.1- Chame a função de novo:
+SELECT unsafe_add_table('T1(id int); DELETE FROM testeSQLi; --');
+
+
+
+10- Execute as chamadas abaixo, usando o código seguinte. O que acontece e por que?
+CREATE OR REPLACE FUNCTION get_staff(_param text, _orderby text, _limit int)
+RETURNS SETOF empregado AS $func$
+BEGIN
+RETURN QUERY EXECUTE '
+SELECT *
+FROM empregado
+WHERE nome_empregado = $1
+ORDER BY ' || quote_ident(_orderby) || ' ASC
+LIMIT $2'
+USING _param, _limit;
+END
+$func$ LANGUAGE plpgsql;
+--Call:
+SELECT * FROM get_staff('Pedro; DELETE FROM testeSQLi; --', 'salario', 100);
+SELECT * FROM get_staff('Pedro', 'salario', 100);
+
+select * from testeSQLi
+
+
